@@ -51,10 +51,21 @@ float windowScale = 0.5f;
 
 struct square shapes[][4] = 
   {
+    //T
     {{-1, purple, 0}, {0, purple, 0}, {1, purple, 0}, {0, purple , -1}},      //t up
     {{0, purple, 1}, {0, purple, 0}, {0, purple, -1}, {1, purple, 0}},         //t right
     {{-1, purple, 0}, {0, purple, 0}, {1, purple, 0}, {0, purple, 1}},         //t down
-    {{0, purple, 1}, {0, purple, 0}, {0, purple, -1}, {-1, purple, 0}}         //t left
+    {{0, purple, 1}, {0, purple, 0}, {0, purple, -1}, {-1, purple, 0}},         //t left
+    //L
+    {{0, turquise, -1}, {0, turquise, 0}, {0, turquise, 1}, {1, turquise, 1}}, //L-up
+    {{-1, turquise, 0}, {0, turquise, 0}, {1, turquise, 0}, {-1, turquise, 1}}, //L-right
+    {{0, turquise, -1}, {0, turquise, 0}, {0, turquise, 1}, {-1, turquise, -1}}, //L-down
+    {{-1, turquise, 0}, {0, turquise, 0}, {1, turquise, 0}, {1, turquise, -1}}, //L-left
+    //square
+    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
+    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
+    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
+    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}}
   };
 
 //openGL section, drawing shit
@@ -144,7 +155,7 @@ int main(int argc, char** argv) {
     .prevTime = glfwGetTime(),
     .ticks = 0,
     .backColor = (vec4){{0.1f, 0.1f, 0.1f, 1.0f}},
-    .shape = &shapes[0]
+    .shape = &shapes[8]
   };
   
   glfwSetWindowUserPointer(window, &state);
@@ -212,7 +223,7 @@ int main(int argc, char** argv) {
     }
 
     //drawing moving shape
-    drawShape(state.ypos, state.xpos, &shapes[state.rotation], aspectRatioScale, transformLoc, squareColor);
+    drawShape(state.ypos, state.xpos, &state.shape[4*state.rotation], aspectRatioScale, transformLoc, squareColor);
 
     glBindVertexArray(0);
 
@@ -234,7 +245,7 @@ int main(int argc, char** argv) {
     state.ticks++;
     if (state.ticks % framesPTick == 0) {
       if (collisionDetector(state.ypos + 1, state.xpos, state.backColor, state.gameBoard, state.shape, state.rotation)) {
-        addShape(state.ypos, state.xpos, &state.gameBoard, &shapes[state.rotation]);
+        addShape(state.ypos, state.xpos, state.gameBoard, &state.shape[4*state.rotation]);
         state.ypos = 25;
       }
       state.ypos = (state.ypos + 3) % 22 -2;
@@ -288,6 +299,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
   if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
     if (collisionDetector(state->ypos, state->xpos+1, (vec4){{0.1f, 0.1f, 0.1f, 1.0f}}, &(state->gameBoard), state->shape, state->rotation)) return;
     state->xpos++;
+  }
+
+  if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+    if (collisionDetector(state->ypos+1, state->xpos, (vec4){{0.1f, 0.1f, 0.1f, 1.0f}}, &(state->gameBoard), state->shape, state->rotation)) return;
+    state->ypos++;
   }
 }
 
