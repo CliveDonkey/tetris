@@ -49,7 +49,8 @@ const vec4 purple = (vec4){{0.8f, 0.0f, 0.8f, 1.0f}};
 //global variables:
 float windowScale = 0.5f;
 
-struct square shapes[][4] = 
+const int shapeCount = 3;
+const struct square shapes[][4] = 
   {
     //T
     {{-1, purple, 0}, {0, purple, 0}, {1, purple, 0}, {0, purple , -1}},      //t up
@@ -155,7 +156,7 @@ int main(int argc, char** argv) {
     .prevTime = glfwGetTime(),
     .ticks = 0,
     .backColor = (vec4){{0.1f, 0.1f, 0.1f, 1.0f}},
-    .shape = &shapes[8]
+    .shape = &shapes[4 * (shapeCount - 1)]
   };
   
   glfwSetWindowUserPointer(window, &state);
@@ -243,12 +244,23 @@ int main(int argc, char** argv) {
 
     //physics
     state.ticks++;
-    if (state.ticks % framesPTick == 0) {
+    if (state.ticks % framesPTick == 0) { //check to see if physics should be processed this frame.
+      
+        //check for wether current tetrinomicon will collide if moved down, if so, it should not be moved, but be added to the background.
       if (collisionDetector(state.ypos + 1, state.xpos, state.backColor, state.gameBoard, state.shape, state.rotation)) {
+        //adds the shape to the gameboard
         addShape(state.ypos, state.xpos, state.gameBoard, &state.shape[4*state.rotation]);
-        state.ypos = 25;
-      }
-      state.ypos = (state.ypos + 3) % 22 -2;
+
+        //reset state of piece, position orientation etc..
+        state.ypos = 0;
+        state.xpos = 5;
+        state.rotation = 0;
+
+        //randomly select what tetrinomicon should be used next, this is simpler but wrong
+        state.shape = shapes[4 * ((int)(state.ticks) % shapeCount)];    //time in micro-seconds used as random number, gud nuff, but also wrong!
+      } 
+      else
+        state.ypos = (state.ypos + 3) % 22 -2;
     }
   }
 
@@ -372,4 +384,8 @@ int collisionDetector(const int y, const int x, vec4 defaultColor, vec4 (*gameBo
   }
 
   return result;
+}
+
+//checks for complete line, removes the complete lines and adds to score:
+void removeLine(struct gameState *state) {
 }
