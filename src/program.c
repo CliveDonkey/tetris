@@ -34,11 +34,13 @@ struct gameState {
   vec4 backColor;
   vec4 gameBoard[20][10];
   struct square (*shape);
+  int score;
 };
 
 int addShape(int y, int x, vec4 (*gameBoard)[20][10], struct square *shape);
 int drawShape(int y, int x, struct square *shape, mat4 aspectRatioScale, int transformLoc, int squareColor);
 int collisionDetector(const int y, const int x, vec4 defaultColor, vec4 (*gameBoard)[20][10], struct square *shape, int rotation);
+void removeLine(struct gameState *state);
 
 //colors:
 const vec4 red = (vec4){{1.0f, 0.0f, 0.0f, 1.0f}};
@@ -156,7 +158,8 @@ int main(int argc, char** argv) {
     .prevTime = glfwGetTime(),
     .ticks = 0,
     .backColor = (vec4){{0.1f, 0.1f, 0.1f, 1.0f}},
-    .shape = &shapes[4 * (shapeCount - 1)]
+    .shape = &shapes[4 * (shapeCount - 1)],
+    .score = 0
   };
   
   glfwSetWindowUserPointer(window, &state);
@@ -258,6 +261,9 @@ int main(int argc, char** argv) {
 
         //randomly select what tetrinomicon should be used next, this is simpler but wrong
         state.shape = shapes[4 * ((int)(state.ticks) % shapeCount)];    //time in micro-seconds used as random number, gud nuff, but also wrong!
+
+        //check to se if a row is full, if so, add score, and remove + do gravity
+        removeLine(&state);
       } 
       else
         state.ypos = (state.ypos + 3) % 22 -2;
@@ -388,4 +394,18 @@ int collisionDetector(const int y, const int x, vec4 defaultColor, vec4 (*gameBo
 
 //checks for complete line, removes the complete lines and adds to score:
 void removeLine(struct gameState *state) {
+  for (int i = 0; i < 20; ++i) {
+    int result = 1;
+
+    for (int j = 0; j < 10; ++j) {
+      if (vec4equal(state->backColor, state->gameBoard[i][j])) {
+        result = 0;
+        break;
+      }
+    }
+    
+    if (result) {
+      printf("Line %i is full!\n", i);
+    }
+  }
 }
