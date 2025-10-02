@@ -405,7 +405,14 @@ void removeLine(struct gameState *state) {
     }
     
     if (result) {
-      printf("Line %i is full!\n", i);
+      void *dst = (void*) &(state->gameBoard[1][0]);
+      void *src = (void*) &(state->gameBoard[0][0]);
+      //maybe off-by-one, try gameBoard[i+1][0]:
+      void *dataEnd = (void*) &(state->gameBoard[i+1][0]);
+      size_t length = dataEnd - dst;
+      memmove(dst, src, length);
+      state->score++;
     }
   }
+  printf("your score is: %i!\n", state->score);
 }
