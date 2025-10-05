@@ -45,13 +45,17 @@ void removeLine(struct gameState *state);
 //colors:
 const vec4 red = (vec4){{1.0f, 0.0f, 0.0f, 1.0f}};
 const vec4 yellow = (vec4){{1.0f, 1.0f, 0.0f, 1.0f}};
-const vec4 turquise = (vec4){{0.2f, 0.4f, 1.0f, 1.0f}};
+const vec4 turquise = (vec4){{0.2f, 0.6f, 0.8f, 1.0f}};
 const vec4 purple = (vec4){{0.8f, 0.0f, 0.8f, 1.0f}};
+const vec4 blue = (vec4){{0.0f, 0.0f, 1.0f, 1.0f}};
+const vec4 orange = (vec4){{1.0f, 0.5f, 0.0f, 1.0f}};
+const vec4 green = (vec4){{0.0f, 0.8f, 0.0f, 1.0f}};
+
 
 //global variables:
 float windowScale = 0.5f;
 
-const int shapeCount = 3;
+const int shapeCount = 7;
 const struct square shapes[][4] = 
   {
     //T
@@ -60,15 +64,35 @@ const struct square shapes[][4] =
     {{-1, purple, 0}, {0, purple, 0}, {1, purple, 0}, {0, purple, 1}},         //t down
     {{0, purple, 1}, {0, purple, 0}, {0, purple, -1}, {-1, purple, 0}},         //t left
     //L
-    {{0, turquise, -1}, {0, turquise, 0}, {0, turquise, 1}, {1, turquise, 1}}, //L-up
-    {{-1, turquise, 0}, {0, turquise, 0}, {1, turquise, 0}, {-1, turquise, 1}}, //L-right
-    {{0, turquise, -1}, {0, turquise, 0}, {0, turquise, 1}, {-1, turquise, -1}}, //L-down
-    {{-1, turquise, 0}, {0, turquise, 0}, {1, turquise, 0}, {1, turquise, -1}}, //L-left
+    {{0, orange, -1}, {0, orange, 0}, {0, orange, 1}, {1, orange, 1}}, //L-up
+    {{-1, orange, 0}, {0, orange, 0}, {1, orange, 0}, {-1, orange, 1}}, //L-right
+    {{0, orange, -1}, {0, orange, 0}, {0, orange, 1}, {-1, orange, -1}}, //L-down
+    {{-1, orange, 0}, {0, orange, 0}, {1, orange, 0}, {1, orange, -1}}, //L-left
+    //J
+    {{0, blue, -1}, {0, blue, 0}, {0, blue, 1}, {-1, blue, 1}}, //J-up
+    {{-1, blue, 0}, {0, blue, 0}, {1, blue, 0}, {-1, blue, -1}}, //L-right
+    {{0, blue, -1}, {0, blue, 0}, {0, blue, 1}, {1, blue, -1}}, //L-down
+    {{-1, blue, 0}, {0, blue, 0}, {1, blue, 0}, {1, blue, 1}}, //L-left
+    //I
+    {{-1, turquise, -1}, {-1, turquise, 0}, {-1, turquise, 1}, {-1, turquise, 2}}, //I-up
+    {{-2, turquise, -1}, {-1, turquise, -1}, {0, turquise, -1}, {1, turquise, -1}}, //I-right
+    {{0, turquise, -1}, {0, turquise, 0}, {0, turquise, 1}, {0, turquise, 2}}, //I-up
+    {{-2, turquise, 0}, {-1, turquise, 0}, {0, turquise, 0}, {1, turquise, 0}}, //I-right
     //square
-    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
-    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
-    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}},
-    {{0, red, 0}, {0, red, 1}, {1, red, 0}, {1, red, 1}}
+    {{0, yellow, 0}, {0, yellow, 1}, {1, yellow, 0}, {1, yellow, 1}},
+    {{0, yellow, 0}, {0, yellow, 1}, {1, yellow, 0}, {1, yellow, 1}},
+    {{0, yellow, 0}, {0, yellow, 1}, {1, yellow, 0}, {1, yellow, 1}},
+    {{0, yellow, 0}, {0, yellow, 1}, {1, yellow, 0}, {1, yellow, 1}},
+    //Z
+    {{-1, red, -1}, {0, red, -1}, {0, red, 0}, {1, red, 0}},
+    {{1, red, -1}, {0, red, 0}, {1, red, 0}, {0, red, 1}},
+    {{-1, red, 0}, {0, red, 0}, {0, red, 1}, {1, red, 1}},
+    {{0, red, -1}, {-1, red, 0}, {0, red, 0}, {-1, red, 1}},
+    //S
+    {{1, green, -1}, {0, green, -1}, {0, green, 0}, {-1, green, 0}},
+    {{1, green, 1}, {0, green, 0}, {1, green, 0}, {0, green, -1}},
+    {{1, green, 0}, {0, green, 0}, {0, green, 1}, {-1, green, 1}},
+    {{0, green, 1}, {-1, green, 0}, {0, green, 0}, {-1, green, -1}}
   };
 
 //openGL section, drawing shit
@@ -260,7 +284,8 @@ int main(int argc, char** argv) {
         state.rotation = 0;
 
         //randomly select what tetrinomicon should be used next, this is simpler but wrong
-        state.shape = shapes[4 * ((int)(state.ticks) % shapeCount)];    //time in micro-seconds used as random number, gud nuff, but also wrong!
+        int r = rand() % shapeCount;
+        state.shape = &shapes[4*r];    //time in micro-seconds used as random number, gud nuff, but also wrong!
 
         //check to se if a row is full, if so, add score, and remove + do gravity
         removeLine(&state);
