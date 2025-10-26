@@ -419,6 +419,7 @@ int collisionDetector(const int y, const int x, vec4 defaultColor, vec4 (*gameBo
 
 //checks for complete line, removes the complete lines and adds to score:
 void removeLine(struct gameState *state) {
+  int scorecount = 0;
   for (int i = 0; i < 20; ++i) {
     int result = 1;
 
@@ -436,8 +437,10 @@ void removeLine(struct gameState *state) {
       void *dataEnd = (void*) &(state->gameBoard[i+1][0]);
       size_t length = dataEnd - dst;
       memmove(dst, src, length);
-      state->score++;
+      scorecount++;
     }
+    //increase score more if we remove more than one line
   }
+  state->score += scorecount;
   printf("your score is: %i!\n", state->score);
 }
